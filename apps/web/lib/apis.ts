@@ -1,5 +1,5 @@
 import axios from "axios";
 
-export const apiQSAR = axios.create({
-  baseURL: "http://api-qsar:3000/v1",
+export const api = axios.create({
+  baseURL: "http://api:3000/v1",
 });

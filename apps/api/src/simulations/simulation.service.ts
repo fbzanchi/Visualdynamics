@@ -84,7 +84,112 @@ export class SimulationService {
     });
   }
 
-  async newACPYPESimulation() {}
+  async newACPYPESimulation(
+    fileName: string,
+    fileNameLigandITP: string,
+    fileNameLigandITPOriginal: string,
+    fileNameLigandPDB: string,
+    body: NewSimulationBody
+  ) {
+    const [userName, fullFileName] = fileName.split("/");
+    const [origPDBName] = fullFileName.split(".");
+    const pdbName = normalizeString(origPDBName);
+
+    const acpypeMoleculeType = fileNameLigandITPOriginal
+      .replace("_GMX", ".pdb.mol2")
+      .replace(".itp", "");
+
+    const commands = [
+      "#topology\n",
+      `grep 'ATOM  ' ${fullFileName} > Protein.pdb\n`,
+      `gmx pdb2gmx -f Protein.pdb -o ${pdbName}_livre.pdb -p ${pdbName}_livre.top -ff ${body.forceField} -water ${body.waterModel} -ignh -missing\n\n`,
+      "#break\n",
+      `grep -h ATOM ${pdbName}_livre.pdb ${
+        fileNameLigandPDB.split("/")[1]
+      } | tee ${pdbName}_complx.pdb > /dev/null\n`,
+      `cat ${
+        fileNameLigandITP.split("/")[1]
+      } | sed -n '/atomtypes/,/^ *$/{{/\\n\\n/d;p}}' > ligand_atomtypes.txt\n`,
+      `cat ${pdbName}_livre.top | sed '/forcefield.itp"/a#include "${
+        fileNameLigandITP.split("/")[1]
+      }"' > ${pdbName}1_complx.top\n`,
+      `cat ${pdbName}1_complx.top | sed '/forcefield.itp/r ligand_atomtypes.txt' > ${pdbName}_complx.top\n`,
+      `echo "${acpypeMoleculeType}         1" >> ${pdbName}_complx.top\n\n`,
+      `gmx editconf -f ${pdbName}_complx.pdb -c -d ${body.boxDistance} -bt ${body.boxType} -o ${pdbName}_complx.pdb\n\n`,
+      "#solvate\n",
+      `gmx solvate -cp ${pdbName}_complx.pdb -cs spc216.gro -p ${pdbName}_complx.top -o ${pdbName}_complx_box.pdb\n\n`,
+      "#ions\n",
+      `gmx grompp -f ions.mdp -c ${pdbName}_complx_box.pdb -p ${pdbName}_complx.top -o ${pdbName}_complx_charged.tpr -maxwarn 20\n`,
+      `echo "SOL" | gmx genion -s ${pdbName}_complx_charged.tpr -p ${pdbName}_complx.top -o ${pdbName}_complx_neutral.pdb -neutral\n\n`,
+      "#minimizationsteepdesc\n",
+      `gmx grompp -f PME_em.mdp -c ${pdbName}_complx_neutral.pdb -p ${pdbName}_complx.top -o ${pdbName}_complx_em.tpr -maxwarn 20\n`,
+      `gmx mdrun -nt 10 -v -s ${pdbName}_complx_em.tpr -deffnm ${pdbName}_complx_sd_em\n`,
+      `echo "10 0" | gmx energy -f ${pdbName}_complx_sd_em.edr -o ${pdbName}_complx_potentialsd.xvg\n`,
+      `grace -nxy ${pdbName}_complx_potentialsd.xvg -hdevice PNG -hardcopy -printfile ../figures/${pdbName}_complx_potentialsd.png\n\n`,
+      "#minimizationconjgrad\n",
+      `gmx grompp -f PME_cg_em.mdp -c ${pdbName}_complx_sd_em.gro -p ${pdbName}_complx.top -o ${pdbName}_complx_cg_em.tpr -maxwarn 20\n`,
+      `gmx mdrun -nt 10 -v -s ${pdbName}_complx_cg_em.tpr -deffnm ${pdbName}_complx_cg_em\n`,
+      `echo "10 0" | gmx energy -f ${pdbName}_complx_cg_em.edr -o ${pdbName}_complx_potentialcg.xvg\n`,
+      `grace -nxy ${pdbName}_complx_potentialcg.xvg -hdevice PNG -hardcopy -printfile ../figures/${pdbName}_complx_potentialcg.png\n\n`,
+      "#equilibrationnvt\n",
+      `gmx grompp -f nvt.mdp -c ${pdbName}_complx_cg_em.gro -r ${pdbName}_complx_cg_em.gro -p ${pdbName}_complx.top -o ${pdbName}_complx_nvt.tpr -maxwarn 20\n`,
+      `gmx mdrun -nt 10 -v -s ${pdbName}_complx_nvt.tpr -deffnm ${pdbName}_complx_nvt\n`,
+      `echo "16 0" | gmx energy -f ${pdbName}_complx_nvt.edr -o ${pdbName}_complx_temperature_nvt.xvg\n`,
+      `grace -nxy ${pdbName}_complx_temperature_nvt.xvg -hdevice PNG -hardcopy -printfile ../figures/${pdbName}_complx_temperature_nvt.png\n\n`,
+      "#equilibrationnpt\n",
+      `gmx grompp -f npt.mdp -c ${pdbName}_complx_nvt.gro -r ${pdbName}_complx_nvt.gro -p ${pdbName}_complx.top -o ${pdbName}_complx_npt.tpr -maxwarn 20\n`,
+      `gmx mdrun -nt 10 -v -s ${pdbName}_complx_npt.tpr -deffnm ${pdbName}_complx_npt\n`,
+      `echo "16 0" | gmx energy -f ${pdbName}_complx_npt.edr -o ${pdbName}_temperature_npt.xvg\n`,
+      `grace -nxy ${pdbName}_temperature_npt.xvg -hdevice PNG -hardcopy -printfile ../figures/${pdbName}_temperature_npt.png\n`,
+      "#productionmd\n",
+      `gmx grompp -f md_pr.mdp -c ${pdbName}_complx_npt.gro -p ${pdbName}_complx.top -o ${pdbName}_complx_pr.tpr -maxwarn 20\n`,
+      `gmx mdrun -nt 10 -v -s ${pdbName}_complx_pr.tpr -deffnm ${pdbName}_complx_pr\n\n`,
+      "#analyzemd\n",
+      `echo "1 0" | gmx trjconv -s ${pdbName}_complx_pr.tpr -f ${pdbName}_complx_pr.xtc -o ${pdbName}_complx_pr_PBC.xtc -pbc mol -center\n`,
+      `echo "4 4" | gmx rms -s ${pdbName}_complx_pr.tpr -f ${pdbName}_complx_pr_PBC.xtc -o ${pdbName}_complx_rmsd_prod.xvg -tu ns\n`,
+      `grace -nxy ${pdbName}_complx_rmsd_prod.xvg -hdevice PNG -hardcopy -printfile ../figures/${pdbName}_complx_rmsd_prod.png\n`,
+      `echo "4 4" | gmx rms -s ${pdbName}_complx_pr.tpr -f ${pdbName}_complx_pr_PBC.xtc -o ${pdbName}_complx_rmsd_cris.xvg -tu ns\n`,
+      `grace -nxy ${pdbName}_complx_rmsd_cris.xvg -hdevice PNG -hardcopy -printfile ../figures/${pdbName}_complx_rmsd_cris.png\n`,
+      `grace -nxy ${pdbName}_complx_rmsd_prod.xvg ${pdbName}_complx_rmsd_cris.xvg -hdevice PNG -hardcopy -printfile ../figures/${pdbName}_complx_rmsd_prod_cris.png\n`,
+      `echo "1" | gmx gyrate -s ${pdbName}_complx_pr.tpr -f ${pdbName}_complx_pr_PBC.xtc -o ${pdbName}_complx_gyrate.xvg\n`,
+      `grace -nxy ${pdbName}_complx_gyrate.xvg -hdevice PNG -hardcopy -printfile ../figures/${pdbName}_complx_gyrate.png\n`,
+      `echo "1" | gmx rmsf -s ${pdbName}_complx_pr.tpr -f ${pdbName}_complx_pr_PBC.xtc -o ${pdbName}_complx_rmsf_residue.xvg -res\n`,
+      `grace -nxy ${pdbName}_complx_rmsf_residue.xvg -hdevice PNG -hardcopy -printfile ../figures/${pdbName}_complx_rmsf_residue.png\n`,
+      `echo "1" | gmx sasa -s ${pdbName}_complx_pr.tpr -f ${pdbName}_complx_pr.xtc -o ${pdbName}_complx_solvent_accessible_surface.xvg -or ${pdbName}_complx_sas_residue.xvg\n`,
+      `grace -nxy ${pdbName}_complx_solvent_accessible_surface.xvg -hdevice PNG -hardcopy -printfile ../figures/${pdbName}_complx_solvent_accessible_surface.png\n`,
+      `grace -nxy ${pdbName}_complx_sas_residue.xvg -hdevice PNG -hardcopy -printfile ../figures/${pdbName}_complx_sas_residue.png\n`,
+    ];
+
+    mkdirSync(`/files/${userName}/acpype`, { recursive: true });
+    const writeStream = createWriteStream(
+      `/files/${userName}/acpype/commands.txt`
+    );
+    commands.forEach((value) => writeStream.write(`${value}\n`));
+    writeStream.end();
+
+    const { id } = await this.prisma.simulation.create({
+      data: {
+        moleculeName: pdbName,
+        status: "GENERATED",
+        type: "ACPYPE",
+        user: {
+          connect: {
+            userName,
+          },
+        },
+      },
+    });
+
+    this.prepareSimulationEnvironment(
+      "ACPYPE",
+      fileName,
+      fileNameLigandITP,
+      fileNameLigandPDB
+    );
+
+    return { simulationId: id, commands };
+  }
+
   async newAPOSimulation(fileName: string, body: NewSimulationBody) {
     const [userName, fullFileName] = fileName.split("/");
     const [origPDBName] = fullFileName.split(".");
@@ -161,7 +266,7 @@ export class SimulationService {
 
     this.prepareSimulationEnvironment("APO", fileName);
 
-    return id;
+    return { simulationId: id, commands };
   }
 
   async newPRODRGSimulation() {}

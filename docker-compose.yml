@@ -10,6 +10,7 @@ services:
     depends_on:
       - database
       - mailer
+      - redis
     ports:
       - "3001:3000"
     volumes:
@@ -33,9 +34,9 @@ services:
     ports:
       - "3000:3000"
     depends_on:
+      - api
       - database
       - mailer
-      - redis
     volumes:
       - ./:/app
       - /app/node_modules

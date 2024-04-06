@@ -3,5 +3,5 @@ export interface NewSimulationBody {
   waterModel: string;
   boxType: string;
   boxDistance: string;
-  shouldRun?: boolean;
+  shouldRun?: "true" | "false";
 }

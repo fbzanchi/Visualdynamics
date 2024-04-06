@@ -31,6 +31,7 @@ export function LoginButton() {
   const shouldShowLoginModal = searchParamDo === "login";
   const searchParamFrom = useSearchParams().get("from");
   const showFromEmailValidationAlert = searchParamFrom === "email-validation";
+  const showUnauthenticatedAlert = searchParamFrom === "unauthenticated";
   const router = useRouter();
   const [opened, { open, close }] = useDisclosure(false);
   const [status, setStatus] = useState<FormSubmissionStatus>();
@@ -115,6 +116,15 @@ export function LoginButton() {
                 status: "info",
                 title: "Your email has been validated",
                 message: "Your can now login and use Visual Dynamics",
+              }}
+            />
+          )}
+          {showUnauthenticatedAlert && (
+            <Alert
+              status={{
+                status: "info",
+                title: "You're not authenticated.",
+                message: "You must be logged in to use Visual Dynamics",
               }}
             />
           )}

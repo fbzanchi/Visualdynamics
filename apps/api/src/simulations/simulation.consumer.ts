@@ -1,6 +1,7 @@
 import { OnQueueActive, OnQueueFailed, Process, Processor } from "@nestjs/bull";
 import { Job } from "bull";
 import { SIMULATION_TYPE } from "database";
+import { writeFile } from "fs";
 import * as path from "path";
 import { chdir } from "process";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -55,6 +56,7 @@ export class SimulationConsumer {
     const folderRun = path.resolve(folder, "run");
     const fileLogPath = path.resolve(folderRun, "logs", "gmx.log");
     const fileStepPath = path.resolve(folder, "steps.txt");
+    const fileEndedPath = path.resolve(folder, "ended");
 
     const commands = await loadCommands(folder);
 
@@ -69,6 +71,10 @@ export class SimulationConsumer {
         endedAt: new Date(),
         status: "COMPLETED",
       },
+    });
+
+    writeFile(fileEndedPath, "ended", (err) => {
+      if (err) console.log(err);
     });
   }
 }

@@ -18,7 +18,7 @@ export function runCommand(
     const logFilePath = path.resolve(logFile);
     const logStream = fs.createWriteStream(logFilePath, { flags: "a" });
 
-    fs.appendFile(logFilePath, "\n", (err) => {
+    fs.appendFile(logFilePath, `\n${command}`, (err) => {
       if (err) reject(err);
       else tryRunCommand();
     });
