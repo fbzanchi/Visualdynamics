@@ -1,7 +1,7 @@
 import { OnQueueActive, OnQueueFailed, Process, Processor } from "@nestjs/bull";
 import { Job } from "bull";
 import { SIMULATION_TYPE } from "database";
-import { writeFile } from "fs";
+import { existsSync, rmSync, writeFileSync } from "fs";
 import * as path from "path";
 import { chdir } from "process";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -30,6 +30,12 @@ export class SimulationConsumer {
         startedAt: new Date(),
       },
     });
+    const queuedFilePath = `/files/${job.data.userName}/queued`;
+    const runningFilePath = `/files/${job.data.userName}/running`;
+    if (existsSync(queuedFilePath)) {
+      rmSync(queuedFilePath);
+    }
+    writeFileSync(runningFilePath, job.data.type);
   }
 
   @OnQueueFailed()
@@ -45,6 +51,7 @@ export class SimulationConsumer {
         erroredOnCommand: error.message,
       },
     });
+    rmSync(`/files/${job.data.userName}/running`);
   }
 
   @Process("simulate")
@@ -73,8 +80,7 @@ export class SimulationConsumer {
       },
     });
 
-    writeFile(fileEndedPath, "ended", (err) => {
-      if (err) console.log(err);
-    });
+    writeFileSync(fileEndedPath, "ended");
+    rmSync(`/files/${userName}/running`);
   }
 }

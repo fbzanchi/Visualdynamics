@@ -1,0 +1,9 @@
+.container {
+  background-color: alpha(var(--mantine-color-indigo-6), 0.25);
+  border-radius: var(--mantine-spacing-xs);
+  border-color: var(--mantine-color-indigo-2);
+  border-width: 1px;
+  border-style: solid;
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-xl);
+  width: 100%;
+}

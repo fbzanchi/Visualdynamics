@@ -1,8 +1,16 @@
 import { InjectQueue } from "@nestjs/bull";
 import { Injectable } from "@nestjs/common";
 import { Queue } from "bull";
-import { SIMULATION_TYPE } from "database";
-import { cpSync, createWriteStream, mkdirSync, renameSync } from "fs";
+import { Simulation, SIMULATION_TYPE } from "database";
+import {
+  cpSync,
+  createWriteStream,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  renameSync,
+  writeFileSync,
+} from "fs";
 import { cwd } from "process";
 import { PrismaService } from "src/prisma/prisma.service";
 import { normalizeString } from "src/utils/normalizeString";
@@ -77,7 +85,8 @@ export class SimulationService {
         status: "QUEUED",
       },
     });
-    await this.simulationQueue.add("simulate", {
+    writeFileSync(`/files/${userName}/queued`, type);
+    await this.simulationQueue.add({
       simulationId,
       userName,
       type,
@@ -270,6 +279,60 @@ export class SimulationService {
   }
 
   async newPRODRGSimulation() {}
-  async getUserLastSimulations() {}
+  async getUserRunningSimulationData(userName: string) {
+    const userFolderPath = `/files/${userName}`;
+    const runningFilePath = `${userFolderPath}/running`;
+
+    if (!existsSync(runningFilePath)) {
+      return "not-running";
+    }
+
+    const simulationType = readFileSync(runningFilePath, { encoding: "utf-8" });
+
+    const runningSimulationFolderPath = `${userFolderPath}/${simulationType.toLowerCase()}`;
+    const logFilePath = `${runningSimulationFolderPath}/run/logs/gmx.log`;
+    const stepFilePath = `${runningSimulationFolderPath}/steps.txt`;
+
+    const stepData = readFileSync(stepFilePath, { encoding: "utf-8" })
+      .split("\n")
+      .filter((s) => s.length);
+    const logData = readFileSync(logFilePath, { encoding: "utf-8" })
+      .replaceAll("\r", "\n")
+      .split("\n")
+      .filter((l) => l.length)
+      .reverse()
+      .splice(0, 30);
+
+    return {
+      simulationType: simulationType.toLowerCase(),
+      stepData,
+      logData,
+    };
+  }
+
+  async getUserLastSimulations(userName: string) {
+    let simulations: { [key: string]: Simulation } = {};
+    for (const type of ["ACPYPE", "APO", "PRODRG"] as SIMULATION_TYPE[]) {
+      const data = await this.prisma.simulation.findFirst({
+        where: {
+          user: {
+            userName,
+          },
+          type,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      simulations = {
+        ...simulations,
+        [type.toLowerCase()]: data,
+      };
+    }
+
+    return simulations;
+  }
+
   async getUserSimulationTree() {}
 }

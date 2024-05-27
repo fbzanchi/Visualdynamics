@@ -1,0 +1,5 @@
+.container {
+  display: grid;
+  gap: var(--mantine-spacing-md);
+  grid-template-columns: repeat(3, 1fr);
+}

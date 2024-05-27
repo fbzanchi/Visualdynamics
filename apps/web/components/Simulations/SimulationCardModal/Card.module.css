@@ -1,0 +1,32 @@
+.default {
+  cursor: pointer;
+  transition: all linear 250ms;
+}
+
+.opacity:hover {
+  opacity: 0.85;
+}
+
+.null {
+  cursor: not-allowed
+}
+
+.queued {
+  background-color: light-dark(var(--mantine-color-orange-0), alpha(var(--mantine-color-orange-4), 0.1));
+  border-color: light-dark(var(--mantine-color-orange-8), var(--mantine-color-orange-3));
+}
+
+.errored {
+  background-color: light-dark(var(--mantine-color-red-0), alpha(var(--mantine-color-red-4), 0.1));
+  border-color: light-dark(var(--mantine-color-red-8), var(--mantine-color-red-3));
+}
+
+.running {
+  background-color: light-dark(var(--mantine-color-indigo-0), alpha(var(--mantine-color-indigo-4), 0.1));
+  border-color: light-dark(var(--mantine-color-indigo-8), var(--mantine-color-indigo-3));
+}
+
+.completed {
+  background-color: light-dark(var(--mantine-color-green-0), alpha(var(--mantine-color-green-4), 0.1));
+  border-color: light-dark(var(--mantine-color-green-8), var(--mantine-color-green-3));
+}

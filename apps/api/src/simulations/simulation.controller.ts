@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Post,
@@ -15,6 +16,7 @@ import {
   FileInterceptor,
 } from "@nestjs/platform-express";
 import { Express, Request } from "express";
+import { writeFile } from "fs";
 import multerConfig from "src/multer.config";
 import { UsernameGuard } from "src/username.guard";
 
@@ -75,6 +77,9 @@ export class SimulationController {
 
       return "added-to-queue";
     }
+    writeFile(`/files/${request.userName}/acpype/ended`, "ended", (err) => {
+      if (err) console.log(err);
+    });
 
     return commands;
   }
@@ -104,6 +109,28 @@ export class SimulationController {
       return "added-to-queue";
     }
 
+    writeFile(`/files/${request.userName}/apo/ended`, "ended", (err) => {
+      if (err) console.log(err);
+    });
+
     return commands;
+  }
+
+  @UseGuards(UsernameGuard)
+  @Get("/")
+  async getRunningSimulationInfo(@Req() request: Request) {
+    const data = this.simulationService.getUserRunningSimulationData(
+      request.userName
+    );
+    return data;
+  }
+
+  @UseGuards(UsernameGuard)
+  @Get("/latest")
+  async getLatestSimulations(@Req() request: Request) {
+    const data = this.simulationService.getUserLastSimulations(
+      request.userName
+    );
+    return data;
   }
 }
