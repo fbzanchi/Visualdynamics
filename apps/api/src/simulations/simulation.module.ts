@@ -17,6 +17,9 @@ import { SimulationService } from "./simulation.service";
     BullBoardModule.forFeature({
       adapter: BullAdapter, // or use BullAdapter if you're using bull instead of bullMQ
       name: "simulation",
+      options: {
+        description: "The Simulation Queue runs all the simulations submitted.",
+      },
     }),
   ],
   controllers: [SimulationController],

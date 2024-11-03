@@ -1,5 +1,7 @@
-node_modules
-
+.yarn/cache
+.git
+.github
 files
+node_modules
 VDFiles
 

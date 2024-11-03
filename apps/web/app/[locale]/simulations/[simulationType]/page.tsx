@@ -4,16 +4,18 @@ import { PageLayout } from "@/components/Layout/PageLayout";
 import { NewSimulationForm } from "@/components/NewSimulationForm";
 
 interface Props {
-  params: {
+  params: Promise<{
     simulationType: SimulationType;
-  };
+  }>;
 }
 
-export default function Page({ params }: Props) {
+export default async function NewSimulationPage({ params }: Props) {
+  const { simulationType } = await params;
+
   return (
     <PageLayout>
-      <Title>New {params.simulationType.toUpperCase()} Simulation</Title>
-      <NewSimulationForm simulationType={params.simulationType} />
+      <Title>New {simulationType.toUpperCase()} Simulation</Title>
+      <NewSimulationForm simulationType={simulationType} />
     </PageLayout>
   );
 }

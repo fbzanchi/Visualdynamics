@@ -6,7 +6,7 @@ import { SimulationsContent } from "@/components/Simulations/Content";
 export default function Page() {
   return (
     <PageLayout>
-      <Title>Running Simulation</Title>
+      <Title>My Simulations</Title>
 
       <SimulationsContent />
     </PageLayout>

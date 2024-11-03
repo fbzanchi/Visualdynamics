@@ -52,23 +52,6 @@ const multerConfig = {
         }
       }
 
-      if (req.url.endsWith("prodrg")) {
-        const prodrgFolder = `${userDir}/prodrg`;
-        const endFile = `${prodrgFolder}/ended`;
-
-        if (fs.existsSync(prodrgFolder)) {
-          if (fs.existsSync(endFile)) {
-            fs.rmSync(prodrgFolder, { recursive: true, force: true });
-          } else {
-            canStore = false;
-            cb(
-              new HttpException("queued-or-running", HttpStatus.CONFLICT),
-              null
-            );
-          }
-        }
-      }
-
       if (!fs.existsSync(userDir)) {
         fs.mkdirSync(userDir);
       }

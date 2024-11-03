@@ -8,8 +8,8 @@ async function bootstrap(): Promise<void> {
   app.setGlobalPrefix("v1");
 
   const config = new DocumentBuilder()
-    .setTitle("Visual Dynamics API")
-    .setDescription("The Visual Dynamics API Documentation")
+    .setTitle("Visual Dynamics Simulation API")
+    .setDescription("The Visual Dynamics Simulation API Documentation")
     .setVersion("0.1")
     .build();
 

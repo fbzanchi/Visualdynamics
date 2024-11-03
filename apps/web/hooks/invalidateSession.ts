@@ -1,10 +1,11 @@
 "use server";
 import { cookies } from "next/headers";
 
-import { lucia, validateRequest } from "@/lib/lucia";
+import { validateSession } from "@/actions/auth/validateSession";
+import { lucia } from "@/lib/lucia";
 
 export async function invalidateSession() {
-  const { session } = await validateRequest();
+  const { session } = await validateSession();
 
   if (!session) {
     return {
@@ -15,5 +16,5 @@ export async function invalidateSession() {
   await lucia.invalidateSession(session.id);
 
   const sessionCookie = lucia.createBlankSessionCookie();
-  cookies().set(sessionCookie.name, sessionCookie.value);
+  (await cookies()).set(sessionCookie.name, sessionCookie.value);
 }

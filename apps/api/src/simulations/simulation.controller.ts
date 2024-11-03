@@ -5,7 +5,9 @@ import {
   HttpException,
   HttpStatus,
   Post,
+  Query,
   Req,
+  StreamableFile,
   UploadedFile,
   UploadedFiles,
   UseGuards,
@@ -15,6 +17,7 @@ import {
   FileFieldsInterceptor,
   FileInterceptor,
 } from "@nestjs/platform-express";
+import { SIMULATION_TYPE } from "database";
 import { Express, Request } from "express";
 import { writeFile } from "fs";
 import multerConfig from "src/multer.config";
@@ -72,7 +75,7 @@ export class SimulationController {
       await this.simulationService.addSimulationToQueue(
         simulationId,
         request.userName,
-        "ACPYPE"
+        "acpype"
       );
 
       return "added-to-queue";
@@ -103,7 +106,7 @@ export class SimulationController {
       await this.simulationService.addSimulationToQueue(
         simulationId,
         request.userName,
-        "APO"
+        "apo"
       );
 
       return "added-to-queue";
@@ -119,10 +122,29 @@ export class SimulationController {
   @UseGuards(UsernameGuard)
   @Get("/")
   async getRunningSimulationInfo(@Req() request: Request) {
-    const data = this.simulationService.getUserRunningSimulationData(
+    const data = await this.simulationService.getUserRunningSimulationData(
       request.userName
     );
+
     return data;
+  }
+
+  @UseGuards(UsernameGuard)
+  @Get("/downloads/figures")
+  async getLastSimulationFigures(
+    @Req() request: Request,
+    @Query("type") type: SIMULATION_TYPE
+  ) {
+    const file = await this.simulationService.getUserLastSimulationFigures(
+      request.userName,
+      type
+    );
+
+    if (file === "no-figures") {
+      throw new HttpException("no-figures", HttpStatus.OK);
+    }
+
+    return new StreamableFile(file);
   }
 
   @UseGuards(UsernameGuard)

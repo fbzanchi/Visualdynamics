@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   api:
     image: visualdynamics/api:dev
@@ -7,6 +5,7 @@ services:
       context: .
       dockerfile: apps/api/Dockerfile.dev
     command: ["yarn", "workspace", "api", "start:dev"]
+    env_file: .env
     depends_on:
       - database
       - mailer
@@ -53,7 +52,7 @@ services:
       - ./emails:/templates
 
   database:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     ports:
       - "65432:5432"
     environment:

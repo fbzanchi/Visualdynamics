@@ -4,6 +4,8 @@
   border-color: var(--mantine-color-indigo-2);
   border-width: 1px;
   border-style: solid;
-  padding: var(--mantine-spacing-sm) var(--mantine-spacing-xl);
+  flex: 1;
+  overflow: scroll;
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
   width: 100%;
 }

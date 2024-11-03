@@ -4,7 +4,7 @@ import { useLatestSimulations } from "@/hooks/simulation/useLatestSimulations";
 
 import { Container } from "../Layout/Container";
 
-import { SimulationCardModal } from "./SimulationCardModal";
+import { SimulationCard } from "./SimulationCard/SimulationCard";
 
 import classes from "./Content.module.css";
 
@@ -20,14 +20,14 @@ export function SimulationsContent() {
   }
 
   if (!data) {
-    return null;
+    return "erro";
   }
 
   return (
     <Container className={classes.container}>
       {Object.keys(data).map((s, i) => (
-        <SimulationCardModal
-          key={data[s as keyof typeof data]?.id ?? `${i}-simulation-card`}
+        <SimulationCard
+          key={data[s as keyof typeof data]?.id || `${i}-simulation-card`}
           simulation={data[s as keyof typeof data]}
           type={s as keyof typeof data}
         />

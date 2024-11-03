@@ -8,11 +8,11 @@ import {
   IconPlus,
   IconReportAnalytics,
 } from "@tabler/icons-react";
-import { Session, User } from "lucia";
 
 import { LoginButton } from "@/components/Auth/LoginButton";
 import { RegisterButton } from "@/components/Auth/RegisterButton";
 import { UserButton } from "@/components/Auth/UserButton";
+import { useSession } from "@/hooks/auth/useSession";
 
 import { Section } from "./Section";
 
@@ -51,28 +51,31 @@ const sections: NavSection[] = [
 ];
 
 interface Props {
-  session: Session | null;
   toggle(): void;
-  user: User | null;
 }
 
-export function Navbar({ session, toggle, user }: Props) {
+export function Navbar({ toggle }: Props) {
+  const { data } = useSession();
   const mainLinks = sections.map((section) => (
     <Section
       key={section.title}
       section={section}
       toggle={toggle}
-      userRole={user?.role}
+      userRole={data?.user?.role}
     />
   ));
 
   return (
     <Box className={classes.container}>
       <Box className={classes.section}>
-        {session && user ? <UserButton user={user} /> : <LoginButton />}
+        {data?.session && data?.user ? (
+          <UserButton user={data?.user} />
+        ) : (
+          <LoginButton />
+        )}
       </Box>
 
-      {session ? (
+      {data?.session ? (
         <Box className={classes.section}>
           <Box className={classes.mainLinks}>{...mainLinks}</Box>
         </Box>

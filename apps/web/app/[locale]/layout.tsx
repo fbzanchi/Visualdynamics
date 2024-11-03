@@ -3,10 +3,9 @@ import { MantineProvider } from "@mantine/core";
 import { DatesProvider } from "@mantine/dates";
 import { Notifications } from "@mantine/notifications";
 import { Metadata } from "next";
-import dynamic from "next/dynamic";
 
 import { EmailValidationModal } from "@/components/Auth/EmailValidationModal";
-import { validateRequest } from "@/lib/lucia";
+import Shell from "@/components/Layout/Shell";
 import { I18nProviderClient } from "@/locales/client";
 import { theme } from "@/theme";
 
@@ -15,10 +14,6 @@ import "@mantine/dates/styles.layer.css";
 import "@mantine/dropzone/styles.layer.css";
 import "@mantine/notifications/styles.layer.css";
 import "@mantine/charts/styles.layer.css";
-
-const Shell = dynamic(() => import("@/components/Layout/Shell"), {
-  ssr: false,
-});
 
 export const metadata: Metadata = {
   title: {
@@ -29,30 +24,30 @@ export const metadata: Metadata = {
 };
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
-  };
+  }>;
 }
 
 export default async function RootLayout({
   children,
   params,
 }: PropsWithChildren<Props>) {
-  const { session, user } = await validateRequest();
+  const { locale } = await params;
 
   return (
-    <html lang={params.locale}>
+    <html lang={locale}>
       <body>
-        <I18nProviderClient locale={params.locale}>
+        <I18nProviderClient locale={locale}>
           <MantineProvider theme={theme}>
             <DatesProvider
               settings={{
                 firstDayOfWeek: 0,
-                locale: params.locale,
+                locale,
               }}
             >
               <Notifications position="top-right" />
-              <Shell session={session} user={user}>
+              <Shell>
                 {children}
                 <EmailValidationModal />
               </Shell>

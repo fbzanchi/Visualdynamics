@@ -1,7 +1,7 @@
 "use server";
-
 import { api } from "@/lib/apis";
-import { validateRequest } from "@/lib/lucia";
+
+import { validateSession } from "../auth/validateSession";
 
 type ResponseData = string[] | "added-to-queue";
 
@@ -9,7 +9,7 @@ export async function submitNewSimulation(
   data: FormData,
   simulationType: SimulationType
 ) {
-  const { user } = await validateRequest();
+  const { user } = await validateSession();
 
   if (!user) {
     return "unauthenticated";

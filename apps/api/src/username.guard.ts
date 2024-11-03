@@ -11,14 +11,17 @@ export class UsernameGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const userName = this.extractUsernameFromHeader(request);
+
     if (!userName) {
       throw new UnauthorizedException();
     }
+
     try {
       request.userName = userName;
     } catch {
       throw new UnauthorizedException();
     }
+
     return true;
   }
 

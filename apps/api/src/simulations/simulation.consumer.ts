@@ -48,7 +48,7 @@ export class SimulationConsumer {
       data: {
         status: "ERRORED",
         endedAt: new Date(),
-        erroredOnCommand: error.message,
+        errorCause: error.message,
       },
     });
     rmSync(`/files/${job.data.userName}/running`);

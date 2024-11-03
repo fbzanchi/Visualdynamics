@@ -5,16 +5,16 @@ import {
 } from "@tanstack/react-query";
 
 import {
-  fetchLatestSimulations,
+  getLatestSimulations,
   LatestSimulations,
-} from "@/actions/simulation/fetchLatestSimulations";
+} from "@/actions/simulation/getLatestSimulations";
 
 export function useLatestSimulations(
   options?: UseQueryOptions<ActionResponse<LatestSimulations>, unknown>
 ): UseQueryResult<ActionResponse<LatestSimulations>, unknown> {
   return useQuery({
     queryKey: ["latest-simulations"],
-    queryFn: () => fetchLatestSimulations(),
+    queryFn: () => getLatestSimulations(),
     ...options,
   });
 }

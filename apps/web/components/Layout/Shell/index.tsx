@@ -28,11 +28,7 @@ const ThemeToggle = dynamic(
   }
 );
 
-export default function Shell({
-  session,
-  user,
-  children,
-}: PropsWithChildren<ValidateRequest>) {
+export default function Shell({ children }: PropsWithChildren) {
   const [opened, { toggle }] = useDisclosure();
 
   return (
@@ -76,7 +72,7 @@ export default function Shell({
           </Group>
         </AppShell.Header>
         <AppShell.Navbar px="md">
-          <Navbar toggle={toggle} session={session} user={user} />
+          <Navbar toggle={toggle} />
         </AppShell.Navbar>
         <AppShell.Main>{children}</AppShell.Main>
       </AppShell>

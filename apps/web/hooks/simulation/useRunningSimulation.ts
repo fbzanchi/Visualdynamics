@@ -15,6 +15,7 @@ export function useRunningSimulation(
   return useQuery({
     queryKey: ["running-simulation"],
     queryFn: () => getRunningSimulation(),
+    refetchInterval: 5 * 1000,
     ...options,
   });
 }

@@ -1,17 +1,20 @@
 "use server";
+import { Simulation } from "database";
 
 import { api } from "@/lib/apis";
-import { validateRequest } from "@/lib/lucia";
+
+import { validateSession } from "../auth/validateSession";
 
 export type RunningSimulation =
   | {
       logData: string[];
       stepData: string[];
+      submissionInfo: Partial<Simulation>;
     }
   | "not-running";
 
 export async function getRunningSimulation() {
-  const { user } = await validateRequest();
+  const { user } = await validateSession();
 
   if (!user) {
     return "unauthenticated";

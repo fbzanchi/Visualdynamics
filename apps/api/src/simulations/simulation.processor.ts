@@ -22,7 +22,7 @@ async function onError(job: Job<SimulateData>, error: Error): Promise<void> {
     data: {
       status: "ERRORED",
       endedAt: new Date(),
-      erroredOnCommand: error.message,
+      errorCause: error.message,
     },
   });
   rmSync(`/files/${job.data.userName}/running`);

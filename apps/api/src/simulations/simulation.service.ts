@@ -1,16 +1,19 @@
 import { InjectQueue } from "@nestjs/bull";
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Queue } from "bull";
+import * as ChildProcess from "child_process";
 import { Simulation, SIMULATION_TYPE } from "database";
 import {
   cpSync,
   createWriteStream,
   existsSync,
   mkdirSync,
+  readdirSync,
   readFileSync,
   renameSync,
   writeFileSync,
 } from "fs";
+import { join } from "path";
 import { cwd } from "process";
 import { PrismaService } from "src/prisma/prisma.service";
 import { normalizeString } from "src/utils/normalizeString";
@@ -102,7 +105,29 @@ export class SimulationService {
   ) {
     const [userName, fullFileName] = fileName.split("/");
     const [origPDBName] = fullFileName.split(".");
+    const [, fullLigandITPName] = fileNameLigandITP.split("/");
+    const [origLigandITPName] = fullLigandITPName.split(".");
+    const [, fullLigandPDBName] = fileNameLigandITP.split("/");
+    const [origLigandPDBName] = fullLigandPDBName.split(".");
+
     const pdbName = normalizeString(origPDBName);
+    const ligandITPName = normalizeString(origLigandITPName);
+    const ligandPDBName = normalizeString(origLigandPDBName);
+
+    const { id } = await this.prisma.simulation.create({
+      data: {
+        moleculeName: pdbName,
+        ligandITPName,
+        ligandPDBName,
+        status: "GENERATED",
+        type: "acpype",
+        user: {
+          connect: {
+            userName,
+          },
+        },
+      },
+    });
 
     const acpypeMoleculeType = fileNameLigandITPOriginal
       .replace("_GMX", ".pdb.mol2")
@@ -176,21 +201,8 @@ export class SimulationService {
     commands.forEach((value) => writeStream.write(`${value}\n`));
     writeStream.end();
 
-    const { id } = await this.prisma.simulation.create({
-      data: {
-        moleculeName: pdbName,
-        status: "GENERATED",
-        type: "ACPYPE",
-        user: {
-          connect: {
-            userName,
-          },
-        },
-      },
-    });
-
     this.prepareSimulationEnvironment(
-      "ACPYPE",
+      "acpype",
       fileName,
       fileNameLigandITP,
       fileNameLigandPDB
@@ -203,6 +215,29 @@ export class SimulationService {
     const [userName, fullFileName] = fileName.split("/");
     const [origPDBName] = fullFileName.split(".");
     const pdbName = normalizeString(origPDBName);
+    let id;
+
+    try {
+      const simulation = await this.prisma.simulation.create({
+        data: {
+          moleculeName: pdbName,
+          status: "GENERATED",
+          type: "apo",
+          user: {
+            connect: {
+              userName,
+            },
+          },
+        },
+      });
+
+      id = simulation.id;
+    } catch {
+      throw new HttpException(
+        "failed-database-conn",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
 
     const commands = [
       "#topology\n",
@@ -260,25 +295,11 @@ export class SimulationService {
     commands.forEach((value) => writeStream.write(`${value}\n`));
     writeStream.end();
 
-    const { id } = await this.prisma.simulation.create({
-      data: {
-        moleculeName: pdbName,
-        status: "GENERATED",
-        type: "APO",
-        user: {
-          connect: {
-            userName,
-          },
-        },
-      },
-    });
-
-    this.prepareSimulationEnvironment("APO", fileName);
+    this.prepareSimulationEnvironment("apo", fileName);
 
     return { simulationId: id, commands };
   }
 
-  async newPRODRGSimulation() {}
   async getUserRunningSimulationData(userName: string) {
     const userFolderPath = `/files/${userName}`;
     const runningFilePath = `${userFolderPath}/running`;
@@ -287,7 +308,9 @@ export class SimulationService {
       return "not-running";
     }
 
-    const simulationType = readFileSync(runningFilePath, { encoding: "utf-8" });
+    const simulationType = readFileSync(runningFilePath, {
+      encoding: "utf-8",
+    }) as SIMULATION_TYPE;
 
     const runningSimulationFolderPath = `${userFolderPath}/${simulationType.toLowerCase()}`;
     const logFilePath = `${runningSimulationFolderPath}/run/logs/gmx.log`;
@@ -303,16 +326,37 @@ export class SimulationService {
       .reverse()
       .splice(0, 30);
 
+    const submissionInfo = await this.prisma.simulation.findFirst({
+      where: {
+        user: {
+          userName,
+        },
+        type: simulationType,
+      },
+      select: {
+        createdAt: true,
+        moleculeName: true,
+        startedAt: true,
+        status: true,
+        type: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
     return {
       simulationType: simulationType.toLowerCase(),
       stepData,
       logData,
+      submissionInfo,
     };
   }
 
   async getUserLastSimulations(userName: string) {
     let simulations: { [key: string]: Simulation } = {};
-    for (const type of ["ACPYPE", "APO", "PRODRG"] as SIMULATION_TYPE[]) {
+
+    for (const type of ["acpype", "apo"] satisfies SIMULATION_TYPE[]) {
       const data = await this.prisma.simulation.findFirst({
         where: {
           user: {
@@ -327,11 +371,29 @@ export class SimulationService {
 
       simulations = {
         ...simulations,
-        [type.toLowerCase()]: data,
+        [type]: data,
       };
     }
 
     return simulations;
+  }
+
+  async getUserLastSimulationFigures(userName: string, type: SIMULATION_TYPE) {
+    const userFolderPath = `/files/${userName}`;
+    const figuresFolderPath = `${userFolderPath}/${type}/figures`;
+
+    if (
+      !existsSync(figuresFolderPath) ||
+      readdirSync(figuresFolderPath).length <= 0
+    ) {
+      return "no-figures";
+    }
+
+    ChildProcess.execSync(`zip -r figures.zip *`, {
+      cwd: figuresFolderPath,
+    });
+
+    return readFileSync(join(figuresFolderPath, "figures.zip"));
   }
 
   async getUserSimulationTree() {}
