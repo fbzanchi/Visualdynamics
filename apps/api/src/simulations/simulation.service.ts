@@ -336,6 +336,8 @@ export class SimulationService {
       select: {
         createdAt: true,
         moleculeName: true,
+        ligandITPName: true,
+        ligandPDBName: true,
         startedAt: true,
         status: true,
         type: true,

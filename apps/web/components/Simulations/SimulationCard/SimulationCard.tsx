@@ -1,15 +1,14 @@
 "use client";
+import { Fragment } from "react";
 import { Box, Card, Text, Title } from "@mantine/core";
+import { IconInfoCircle } from "@tabler/icons-react";
 import { clsx } from "clsx";
 import { Simulation, SIMULATION_TYPE } from "database";
 import Link from "next/link";
 
 import { dateFormat } from "@/utils/dateFormat";
 
-import { DownloadCommands } from "./DownloadCommands";
-import { DownloadFigures } from "./DownloadFigures";
-import { DownloadGromacsLogs } from "./DownloadGromacsLogs";
-import { DownloadResults } from "./DownloadResults";
+import { Download } from "./Download";
 
 import classes from "./SimulationCard.module.css";
 
@@ -61,24 +60,46 @@ export function SimulationCard({ simulation, type }: Props) {
       <Card.Section className={border} withBorder>
         <Title className={classes.title}>{type}</Title>
       </Card.Section>
-      <Box>
-        <Title className={classes.section_title}>Simulation Info</Title>
-        <Line label="Molecule name" value={simulation?.moleculeName} />
-        <Line label="Ligand ITP name" value={simulation?.ligandITPName} />
-        <Line label="Ligand PDB name" value={simulation?.ligandPDBName} />
-        <Line label="Submitted in" value={dateFormat(simulation?.createdAt)} />
-        <Line label="Started at" value={dateFormat(simulation?.startedAt)} />
-        <Line label="Ended at" value={dateFormat(simulation?.endedAt)} />
-        <Line label="Error cause" value={simulation?.errorCause} />
-      </Box>
-      {(simulation?.status === "COMPLETED" ||
-        simulation?.status === "ERRORED") && (
-        <Box>
-          <Title className={classes.section_title}>Downloads</Title>
-          <DownloadFigures simulation={simulation} />
-          <DownloadCommands simulation={simulation} />
-          <DownloadGromacsLogs simulation={simulation} />
-          <DownloadResults simulation={simulation} />
+      {simulation ? (
+        <Fragment>
+          <Box className={classes.section_info_container}>
+            <Title className={classes.section_title}>Simulation Info</Title>
+            <Box>
+              <Line label="Molecule name" value={simulation?.moleculeName} />
+              <Line label="Ligand ITP name" value={simulation?.ligandITPName} />
+              <Line label="Ligand PDB name" value={simulation?.ligandPDBName} />
+              <Line
+                label="Submitted in"
+                value={dateFormat(simulation?.createdAt)}
+              />
+              <Line
+                label="Started at"
+                value={dateFormat(simulation?.startedAt)}
+              />
+              <Line label="Ended at" value={dateFormat(simulation?.endedAt)} />
+              <Line label="Error cause" value={simulation?.errorCause} />
+            </Box>
+          </Box>
+          <Box className={classes.section_container}>
+            <Title className={classes.section_title}>Downloads</Title>
+            {simulation?.status === "COMPLETED" ||
+            simulation?.status === "ERRORED" ? (
+              <Box className={classes.section_container}>
+                <Download simulation={simulation} target="commands" />
+                <Download simulation={simulation} target="figures" />
+                <Download simulation={simulation} target="gromacsLogs" />
+                <Download simulation={simulation} target="results" />
+              </Box>
+            ) : (
+              <Text>Downloads will be available when the simulation ends.</Text>
+            )}
+          </Box>
+        </Fragment>
+      ) : (
+        <Box className={classes.no_simulation_container}>
+          <IconInfoCircle size={64} />
+          <Title order={3}>No simulation yet.</Title>
+          <Text>You can always start a new simulation in the sidebar.</Text>
         </Box>
       )}
     </Card>

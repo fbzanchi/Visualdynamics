@@ -5,7 +5,7 @@
   border-width: 1px;
   border-style: solid;
   flex: 1;
-  overflow: scroll;
+  overflow-y: scroll;
   padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
   width: 100%;
 }

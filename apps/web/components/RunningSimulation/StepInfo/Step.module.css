@@ -1,0 +1,11 @@
+.step_container {
+  display: flex;
+  flex-direction: row;
+  gap: var(--mantine-spacing-xs);
+  height: 36px;
+}
+
+.step_icon_container {
+  height: 24px;
+  width: 24px;
+}

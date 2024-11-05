@@ -73,9 +73,30 @@
 
 .section_title {
   font-size: var(--mantine-font-size-xl);
-  margin-bottom: var(--mantine-spacing-xs);
 
   @media (min-width: $mantine-breakpoint-md) {
     font-size: calc(var(--mantine-font-size-xl) * 1.25);
   }
+}
+
+.section_container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--mantine-spacing-sm);
+}
+
+.section_info_container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-xs);
+}
+
+.no_simulation_container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  gap: var(--mantine-spacing-md);
 }

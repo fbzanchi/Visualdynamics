@@ -1,6 +1,7 @@
 .container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, 1fr);
   gap: calc(var(--mantine-spacing-xs) / 2);
 }
 

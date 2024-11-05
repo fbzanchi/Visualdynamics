@@ -1,0 +1,15 @@
+.root {
+  flex: 1;
+  overflow: hidden;
+}
+
+.inner {
+  justify-content: flex-start;
+}
+
+.bg_icon {
+  position: absolute;
+  right: var(--mantine-spacing-md);
+  top: -var(--mantine-spacing-md);
+  color: var(--mantine-primary-color-3);
+}

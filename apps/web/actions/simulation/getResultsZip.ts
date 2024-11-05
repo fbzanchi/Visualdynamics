@@ -5,7 +5,7 @@ import { api } from "@/lib/apis";
 
 import { validateSession } from "../auth/validateSession";
 
-export async function getResults(simulationType: SIMULATION_TYPE) {
+export async function getResultsZip(simulationType: SIMULATION_TYPE) {
   const { user } = await validateSession();
 
   if (!user) {
