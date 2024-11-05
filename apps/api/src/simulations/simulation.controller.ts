@@ -148,6 +148,60 @@ export class SimulationController {
   }
 
   @UseGuards(UsernameGuard)
+  @Get("/downloads/commands")
+  async getLastSimulationCommands(
+    @Req() request: Request,
+    @Query("type") type: SIMULATION_TYPE
+  ) {
+    const file = await this.simulationService.getUserLastSimulationCommands(
+      request.userName,
+      type
+    );
+
+    if (file === "no-commands") {
+      throw new HttpException("no-commands", HttpStatus.OK);
+    }
+
+    return new StreamableFile(file);
+  }
+
+  @UseGuards(UsernameGuard)
+  @Get("/downloads/logs")
+  async getLastSimulationGromacsLogs(
+    @Req() request: Request,
+    @Query("type") type: SIMULATION_TYPE
+  ) {
+    const file = await this.simulationService.getUserLastSimulationGromacsLogs(
+      request.userName,
+      type
+    );
+
+    if (file === "no-logs") {
+      throw new HttpException("no-logs", HttpStatus.OK);
+    }
+
+    return new StreamableFile(file);
+  }
+
+  @UseGuards(UsernameGuard)
+  @Get("/downloads/results")
+  async getLastSimulationResults(
+    @Req() request: Request,
+    @Query("type") type: SIMULATION_TYPE
+  ) {
+    const file = await this.simulationService.getUserLastSimulationResults(
+      request.userName,
+      type
+    );
+
+    if (file === "no-results") {
+      throw new HttpException("no-results", HttpStatus.OK);
+    }
+
+    return new StreamableFile(file);
+  }
+
+  @UseGuards(UsernameGuard)
   @Get("/latest")
   async getLatestSimulations(@Req() request: Request) {
     const data = this.simulationService.getUserLastSimulations(

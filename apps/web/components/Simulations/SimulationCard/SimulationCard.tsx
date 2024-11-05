@@ -6,7 +6,10 @@ import Link from "next/link";
 
 import { dateFormat } from "@/utils/dateFormat";
 
+import { DownloadCommands } from "./DownloadCommands";
 import { DownloadFigures } from "./DownloadFigures";
+import { DownloadGromacsLogs } from "./DownloadGromacsLogs";
+import { DownloadResults } from "./DownloadResults";
 
 import classes from "./SimulationCard.module.css";
 
@@ -73,6 +76,9 @@ export function SimulationCard({ simulation, type }: Props) {
         <Box>
           <Title className={classes.section_title}>Downloads</Title>
           <DownloadFigures simulation={simulation} />
+          <DownloadCommands simulation={simulation} />
+          <DownloadGromacsLogs simulation={simulation} />
+          <DownloadResults simulation={simulation} />
         </Box>
       )}
     </Card>

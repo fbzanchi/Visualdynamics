@@ -2,18 +2,18 @@
 import { Button } from "@mantine/core";
 import { Simulation } from "database";
 
-import { getFiguresZip } from "@/actions/simulation/getFiguresZip";
+import { getGromacsLogs } from "@/actions/simulation/getGromacsLogs";
 
 interface Props {
   simulation: Simulation;
 }
 
-export function DownloadFigures({ simulation }: Props) {
+export function DownloadGromacsLogs({ simulation }: Props) {
   async function handleDownload() {
-    const data = await getFiguresZip(simulation.type);
+    const data = await getGromacsLogs(simulation.type);
 
     const link = document.createElement("a");
-    link.download = `${simulation.type}-${simulation.moleculeName}-${simulation.createdAt}-figures.zip`;
+    link.download = `${simulation.type}-${simulation.moleculeName}-${simulation.createdAt}-logs.txt`;
     const blobUrl = window.URL.createObjectURL(
       new Blob([new Uint8Array(Buffer.from(data, "base64"))])
     );
@@ -23,5 +23,5 @@ export function DownloadFigures({ simulation }: Props) {
     window.URL.revokeObjectURL(blobUrl);
   }
 
-  return <Button onClick={handleDownload}>Download Figures</Button>;
+  return <Button onClick={handleDownload}>Download Logs</Button>;
 }

@@ -396,5 +396,48 @@ export class SimulationService {
     return readFileSync(join(figuresFolderPath, "figures.zip"));
   }
 
+  async getUserLastSimulationCommands(userName: string, type: SIMULATION_TYPE) {
+    const userFolderPath = `/files/${userName}`;
+    const commandsFilePath = `${userFolderPath}/${type}/commands.txt`;
+
+    if (!existsSync(commandsFilePath)) {
+      return "no-commands";
+    }
+
+    return readFileSync(commandsFilePath);
+  }
+
+  async getUserLastSimulationGromacsLogs(
+    userName: string,
+    type: SIMULATION_TYPE
+  ) {
+    const userFolderPath = `/files/${userName}`;
+    const logFilePath = `${userFolderPath}/${type}/run/logs/gmx.log`;
+
+    if (!existsSync(logFilePath)) {
+      return "no-logs";
+    }
+
+    return readFileSync(logFilePath);
+  }
+
+  async getUserLastSimulationResults(userName: string, type: SIMULATION_TYPE) {
+    const userFolderPath = `/files/${userName}`;
+    const runFolderPath = `${userFolderPath}/${type}/run`;
+
+    if (!existsSync(runFolderPath) || readdirSync(runFolderPath).length <= 0) {
+      return "no-results";
+    }
+
+    ChildProcess.execSync(
+      `zip -r results.zip *_PBC.xtc *_pr.tpr *_npt.gro *_PBC.gro *_pr.edr`,
+      {
+        cwd: runFolderPath,
+      }
+    );
+
+    return readFileSync(join(runFolderPath, "results.zip"));
+  }
+
   async getUserSimulationTree() {}
 }

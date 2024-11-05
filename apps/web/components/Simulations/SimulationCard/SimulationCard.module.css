@@ -73,6 +73,7 @@
 
 .section_title {
   font-size: var(--mantine-font-size-xl);
+  margin-bottom: var(--mantine-spacing-xs);
 
   @media (min-width: $mantine-breakpoint-md) {
     font-size: calc(var(--mantine-font-size-xl) * 1.25);
