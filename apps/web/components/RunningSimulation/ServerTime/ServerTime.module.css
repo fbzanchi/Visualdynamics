@@ -1,10 +1,6 @@
-.step_container {
+.container {
+  align-items: center;
   display: flex;
   flex-direction: row;
   gap: var(--mantine-spacing-xs);
-}
-
-.step_icon_container {
-  height: 24px;
-  width: 24px;
 }

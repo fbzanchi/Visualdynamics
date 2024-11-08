@@ -5,7 +5,7 @@ import { Notifications } from "@mantine/notifications";
 import { Metadata } from "next";
 
 import { EmailValidationModal } from "@/components/Auth/EmailValidationModal";
-import Shell from "@/components/Layout/Shell";
+import { Shell } from "@/components/Layout/Shell";
 import { I18nProviderClient } from "@/locales/client";
 import { theme } from "@/theme";
 
@@ -36,10 +36,10 @@ export default async function RootLayout({
   const { locale } = await params;
 
   return (
-    <html lang={locale}>
+    <html lang={locale} data-mantine-color-scheme="dark">
       <body>
         <I18nProviderClient locale={locale}>
-          <MantineProvider theme={theme}>
+          <MantineProvider forceColorScheme="dark" theme={theme}>
             <DatesProvider
               settings={{
                 firstDayOfWeek: 0,

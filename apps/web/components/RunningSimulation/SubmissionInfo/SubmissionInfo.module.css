@@ -7,6 +7,10 @@
 
 .text_container {
   display: flex;
-  flex-direction: row;
-  gap: var(--mantine-spacing-xs);
+  flex-direction: column;
+
+  @media (min-width: $mantine-breakpoint-xl) {
+    flex-direction: row;
+    gap: var(--mantine-spacing-xs);
+  }
 }

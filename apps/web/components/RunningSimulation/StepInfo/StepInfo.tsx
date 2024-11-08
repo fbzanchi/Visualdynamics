@@ -1,5 +1,7 @@
 "use client";
-import { Box, Loader } from "@mantine/core";
+import { Fragment } from "react";
+import { Box, Loader, Title } from "@mantine/core";
+import { IconArrowDown } from "@tabler/icons-react";
 
 import { useRunningSimulation } from "@/hooks/simulation/useRunningSimulation";
 
@@ -23,7 +25,11 @@ export function StepInfo() {
   const { data, isLoading } = useRunningSimulation();
 
   if (isLoading) {
-    return <Loader />;
+    return (
+      <Box className={classes.container}>
+        <Loader />
+      </Box>
+    );
   }
 
   if (!data || data === "unauthenticated") {
@@ -36,6 +42,7 @@ export function StepInfo() {
 
   return (
     <Box className={classes.container}>
+      <Title order={3}>Steps</Title>
       {Object.entries(steps).map(([key, value]) => {
         const isRunning = data.stepData[data.stepData.length - 1] === `#${key}`;
         const isDone = data.stepData
@@ -49,16 +56,17 @@ export function StepInfo() {
         }
 
         if (isRunning) {
-          console.log(
-            data.stepData[data.stepData.length - 1],
-            key,
-            state,
-            value
-          );
           state = "inprogress";
         }
 
-        return <Step key={key} state={state} label={value} />;
+        return (
+          <Fragment key={key}>
+            <Step state={state} label={value} />
+            {key !== "analyzemd" && (
+              <IconArrowDown className={classes.arrow_down_icon} />
+            )}
+          </Fragment>
+        );
       })}
     </Box>
   );

@@ -5,7 +5,7 @@ import { prisma } from "database";
 
 import { normalizeString } from "@/utils/normalizeString";
 
-export async function registerUser(data: RegisterFormInputs) {
+export async function register(data: RegisterFormInputs) {
   try {
     data.userName = normalizeString(data.userName);
 

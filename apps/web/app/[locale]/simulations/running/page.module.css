@@ -5,6 +5,12 @@
   gap: var(--mantine-spacing-md);
 }
 
+.title_container {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
 .container_stack {
   display: flex;
   flex: 1;

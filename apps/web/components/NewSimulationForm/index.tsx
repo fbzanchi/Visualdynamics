@@ -19,6 +19,7 @@ import {
   IconFileDownload,
   IconFileUpload,
 } from "@tabler/icons-react";
+import { SIMULATION_TYPE } from "database";
 import { useRouter } from "next/navigation";
 
 import { submitNewSimulation } from "@/actions/simulation/submitNewSimulation";
@@ -32,7 +33,7 @@ import { waterModels } from "./data/water-models";
 import classes from "./NewSimulationForm.module.css";
 
 interface Props {
-  simulationType: SimulationType;
+  simulationType: SIMULATION_TYPE;
 }
 
 interface FormProps {
@@ -140,6 +141,10 @@ export function NewSimulationForm({ simulationType }: Props) {
           router.push("/simulations/running");
         } else if (response === "unauthenticated") {
           router.replace("/?do=login&from=unauthenticated");
+        } else if (response === "queued-or-running") {
+          router.push("/simulations/running");
+        } else if (response === "unknown-error") {
+          //
         } else {
           const filename = `${simulationType}-${
             values.filePDB.name.split(".")[0]

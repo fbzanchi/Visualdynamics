@@ -1,11 +1,53 @@
 .container {
-  background-color: alpha(var(--mantine-color-indigo-6), 0.25);
-  border-radius: var(--mantine-spacing-xs);
-  border-color: var(--mantine-color-indigo-2);
+  background-color: var(--mantine-color-dark-8);
+  border-radius: 0;
+  border-color: var(--mantine-primary-color-4);
   border-width: 1px;
   border-style: solid;
   flex: 1;
   overflow-y: scroll;
-  padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
+  position: relative;
+  padding: 0 var(--mantine-spacing-md);
   width: 100%;
+
+  /* width */
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: var(--mantine-color-dark-4);
+    border-radius: 0;
+  }
+
+  /* Handle on hover */
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--mantine-color-dark-2);
+  }
+}
+
+.container_title {
+  background: var(--mantine-color-dark-8);
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-top: var(--mantine-spacing-xs);
+  padding-bottom: calc(var(--mantine-spacing-xs) / 2);
+}
+
+.not_running_container {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--mantine-spacing-md);
+  justify-content: center;
 }

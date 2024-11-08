@@ -20,7 +20,7 @@ const signInReturnCodes: {
   INACTIVE: "Your account has been disabled due to inactivity",
 };
 
-export async function signIn(userName: string, password: string) {
+export async function login(userName: string, password: string) {
   try {
     const trimmedUserName = normalizeString(userName);
 
@@ -44,7 +44,7 @@ export async function signIn(userName: string, password: string) {
 
     const session = await lucia.createSession(user.id, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
-    cookies().set(
+    (await cookies()).set(
       sessionCookie.name,
       sessionCookie.value,
       sessionCookie.attributes

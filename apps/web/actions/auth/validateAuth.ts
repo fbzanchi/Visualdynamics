@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 import { lucia } from "@/lib/lucia";
 
-export async function validateSession(): Promise<ValidateRequest> {
+export async function validateAuth(): Promise<ValidateAuth> {
   const sessionId =
     (await cookies()).get(lucia.sessionCookieName)?.value ?? null;
 

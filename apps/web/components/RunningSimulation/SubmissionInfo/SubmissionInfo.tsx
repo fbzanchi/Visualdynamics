@@ -25,10 +25,12 @@ function InfoText({ label, value }: { label: string; value?: string | null }) {
 export function SubmissionInfo() {
   const { data, isLoading } = useRunningSimulation();
 
-  console.log(data);
-
   if (isLoading) {
-    return <Loader />;
+    return (
+      <Box className={classes.container}>
+        <Loader />
+      </Box>
+    );
   }
 
   if (!data || data === "unauthenticated") {

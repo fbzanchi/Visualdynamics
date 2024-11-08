@@ -1,6 +1,8 @@
 .yarn/cache
 .git
 .github
+.next
+dist
 files
 node_modules
 VDFiles

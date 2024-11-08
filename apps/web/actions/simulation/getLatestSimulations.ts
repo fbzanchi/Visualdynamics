@@ -3,14 +3,14 @@ import { Simulation, SIMULATION_TYPE } from "database";
 
 import { api } from "@/lib/apis";
 
-import { validateSession } from "../auth/validateSession";
+import { validateAuth } from "../auth/validateAuth";
 
 export type LatestSimulations = {
   [key in SIMULATION_TYPE]: Simulation | null;
 };
 
 export async function getLatestSimulations() {
-  const { user } = await validateSession();
+  const { user } = await validateAuth();
 
   if (!user) {
     return "unauthenticated";

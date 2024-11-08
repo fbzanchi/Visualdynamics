@@ -3,7 +3,7 @@ import { Simulation } from "database";
 
 import { api } from "@/lib/apis";
 
-import { validateSession } from "../auth/validateSession";
+import { validateAuth } from "../auth/validateAuth";
 
 export type RunningSimulation =
   | {
@@ -14,7 +14,7 @@ export type RunningSimulation =
   | "not-running";
 
 export async function getRunningSimulation() {
-  const { user } = await validateSession();
+  const { user } = await validateAuth();
 
   if (!user) {
     return "unauthenticated";

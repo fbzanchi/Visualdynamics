@@ -14,15 +14,15 @@ import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { IconChevronRight, IconUserPlus } from "@tabler/icons-react";
 
-import { registerUser } from "@/actions/auth/registerUser";
+import { register } from "@/actions/auth/register";
 import { Alert } from "@/components/Alert";
 import { normalizeString } from "@/utils/normalizeString";
 
-import classes from "./RegisterButton.module.css";
+import classes from "./Register.module.css";
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {}
 
-export function RegisterButton(props: Props): ReactElement {
+export function Register(props: Props): ReactElement {
   const [opened, { open, close }] = useDisclosure(false);
   const [status, setStatus] = useState<FormSubmissionStatus>();
   const { getInputProps, onSubmit, reset } = useForm<RegisterFormInputs>({
@@ -56,7 +56,7 @@ export function RegisterButton(props: Props): ReactElement {
 
   async function doRegister(data: RegisterFormInputs) {
     setStatus({ status: "loading" });
-    registerUser(data).then((res) => {
+    register(data).then((res) => {
       if (res === "existing-user") {
         setStatus({
           status: "error",

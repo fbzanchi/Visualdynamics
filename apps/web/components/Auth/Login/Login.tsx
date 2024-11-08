@@ -15,18 +15,18 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconChevronRight } from "@tabler/icons-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { signIn } from "@/actions/auth/signIn";
+import { login } from "@/actions/auth/login";
 import { Alert } from "@/components/Alert";
 import { normalizeString } from "@/utils/normalizeString";
 
-import classes from "./LoginButton.module.css";
+import classes from "./Login.module.css";
 
 interface FormInputs {
   userName: string;
   password: string;
 }
 
-export function LoginButton() {
+export function Login() {
   const searchParamDo = useSearchParams().get("do");
   const shouldShowLoginModal = searchParamDo === "login";
   const searchParamFrom = useSearchParams().get("from");
@@ -54,7 +54,7 @@ export function LoginButton() {
 
   async function doLogin({ userName, password }: FormInputs) {
     setStatus({ status: "loading" });
-    signIn(userName, password).then((res) => {
+    login(userName, password).then((res) => {
       if (res === "invalid-credentials") {
         setStatus({
           status: "warning",

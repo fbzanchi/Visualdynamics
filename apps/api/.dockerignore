@@ -1,5 +1,0 @@
-Dockerfile.dev
-bin
-dist
-.gitignore
-node_modules

@@ -3,10 +3,10 @@ import { SIMULATION_TYPE } from "database";
 
 import { api } from "@/lib/apis";
 
-import { validateSession } from "../auth/validateSession";
+import { validateAuth } from "../auth/validateAuth";
 
 export async function getResultsZip(simulationType: SIMULATION_TYPE) {
-  const { user } = await validateSession();
+  const { user } = await validateAuth();
 
   if (!user) {
     return "unauthenticated";

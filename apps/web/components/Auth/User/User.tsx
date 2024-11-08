@@ -1,17 +1,19 @@
 import { ActionIcon, Avatar, Box, Group, Text } from "@mantine/core";
 import { IconLogout } from "@tabler/icons-react";
-import { User } from "lucia";
 
-import { invalidateSession } from "@/hooks/invalidateSession";
+import { invalidateAuth } from "@/actions/auth/invalidateAuth";
+import { useAuth } from "@/hooks/auth/useAuth";
 
-import classes from "./UserButton.module.css";
+import classes from "./User.module.css";
 
-interface Props {
-  user: User;
-}
+export function User() {
+  const { data } = useAuth();
 
-export function UserButton({ user }: Props) {
-  const userFullName = `${user.firstName} ${user.lastName}`;
+  if (!data || !data.session || !data.user) {
+    return null;
+  }
+
+  const userFullName = `${data.user.firstName} ${data.user.lastName}`;
 
   return (
     <Box className={classes.user}>
@@ -24,13 +26,13 @@ export function UserButton({ user }: Props) {
           </Text>
 
           <Text c="dimmed" size="xs">
-            {user.email}
+            {data.user.email}
           </Text>
         </div>
 
         <ActionIcon
           color="red"
-          onClick={() => invalidateSession()}
+          onClick={() => invalidateAuth()}
           size="lg"
           variant="light"
         >

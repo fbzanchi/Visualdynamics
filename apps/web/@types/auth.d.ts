@@ -1,7 +1,7 @@
 import { Session, User } from "lucia";
 
 declare global {
-  interface ValidateRequest {
+  interface ValidateAuth {
     session: Session | null;
     user: User | null;
   }

@@ -9,12 +9,12 @@ import {
   IconReportAnalytics,
 } from "@tabler/icons-react";
 
-import { LoginButton } from "@/components/Auth/LoginButton";
-import { RegisterButton } from "@/components/Auth/RegisterButton";
-import { UserButton } from "@/components/Auth/UserButton";
-import { useSession } from "@/hooks/auth/useSession";
+import { Login } from "@/components/Auth/Login/Login";
+import { Register } from "@/components/Auth/Register/Register";
+import { User } from "@/components/Auth/User/User";
+import { useAuth } from "@/hooks/auth/useAuth";
 
-import { Section } from "./Section";
+import { Section } from "./Section/Section";
 
 import classes from "./Navbar.module.css";
 
@@ -40,12 +40,6 @@ const sections: NavSection[] = [
       { icon: IconInfoCircle, label: "My Simulations", href: "/simulations" },
       { icon: IconPlus, label: "New ACPYPE", href: "/simulations/acpype" },
       { icon: IconPlus, label: "New APO", href: "/simulations/apo" },
-      {
-        icon: IconPlus,
-        label: "New PRODRG",
-        href: "/simulations/prodrg",
-        badge: { color: "red", message: "DEPRECATED" },
-      },
     ],
   },
 ];
@@ -55,7 +49,8 @@ interface Props {
 }
 
 export function Navbar({ toggle }: Props) {
-  const { data } = useSession();
+  const { data } = useAuth();
+
   const mainLinks = sections.map((section) => (
     <Section
       key={section.title}
@@ -68,11 +63,7 @@ export function Navbar({ toggle }: Props) {
   return (
     <Box className={classes.container}>
       <Box className={classes.section}>
-        {data?.session && data?.user ? (
-          <UserButton user={data?.user} />
-        ) : (
-          <LoginButton />
-        )}
+        {data?.session && data?.user ? <User /> : <Login />}
       </Box>
 
       {data?.session ? (
@@ -81,7 +72,7 @@ export function Navbar({ toggle }: Props) {
         </Box>
       ) : (
         <Box className={classes.section}>
-          <RegisterButton />
+          <Register />
         </Box>
       )}
     </Box>

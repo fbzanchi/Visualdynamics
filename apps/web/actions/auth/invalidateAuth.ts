@@ -1,11 +1,11 @@
 "use server";
 import { cookies } from "next/headers";
 
-import { validateSession } from "@/actions/auth/validateSession";
+import { validateAuth } from "@/actions/auth/validateAuth";
 import { lucia } from "@/lib/lucia";
 
-export async function invalidateSession() {
-  const { session } = await validateSession();
+export async function invalidateAuth() {
+  const { session } = await validateAuth();
 
   if (!session) {
     return {

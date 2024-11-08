@@ -63,4 +63,5 @@
 
 .badge {
   margin-left: auto;
+  cursor: pointer;
 }

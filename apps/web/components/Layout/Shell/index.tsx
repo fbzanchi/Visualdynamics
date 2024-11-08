@@ -1,6 +1,6 @@
 "use client";
 import { PropsWithChildren } from "react";
-import { AppShell, Box, Burger, Group } from "@mantine/core";
+import { AppShell, Burger, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -8,27 +8,20 @@ import dynamic from "next/dynamic";
 
 import { LoadingBox } from "@/components/LoadingBox";
 import { Logo } from "@/components/Logo";
+import { ServerTime } from "@/components/RunningSimulation/ServerTime/ServerTime";
 import { queryClient } from "@/lib/queryClient";
 
 import classes from "./Shell.module.css";
 
 const Navbar = dynamic(
-  () => import("@/components/Layout/Navbar").then((mod) => mod.Navbar),
+  () => import("@/components/Layout/Navbar/Navbar").then((mod) => mod.Navbar),
   {
     loading: LoadingBox,
     ssr: false,
   }
 );
 
-const ThemeToggle = dynamic(
-  () =>
-    import("@/components/Layout/ThemeToggle").then((mod) => mod.ThemeToggle),
-  {
-    ssr: false,
-  }
-);
-
-export default function Shell({ children }: PropsWithChildren) {
+export function Shell({ children }: PropsWithChildren) {
   const [opened, { toggle }] = useDisclosure();
 
   return (
@@ -64,11 +57,7 @@ export default function Shell({ children }: PropsWithChildren) {
               />
               <Logo />
             </Group>
-            <Group>
-              <Box visibleFrom="sm">
-                <ThemeToggle />
-              </Box>
-            </Group>
+            <ServerTime />
           </Group>
         </AppShell.Header>
         <AppShell.Navbar px="md">
