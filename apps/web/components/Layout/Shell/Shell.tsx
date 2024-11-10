@@ -6,9 +6,9 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import dynamic from "next/dynamic";
 
-import { LoadingBox } from "@/components/LoadingBox";
+import { CenteredLoader } from "@/components/Loader/CenteredLoader";
+import { Loader } from "@/components/Loader/Loader";
 import { Logo } from "@/components/Logo";
-import { ServerTime } from "@/components/RunningSimulation/ServerTime/ServerTime";
 import { queryClient } from "@/lib/queryClient";
 
 import classes from "./Shell.module.css";
@@ -16,7 +16,15 @@ import classes from "./Shell.module.css";
 const Navbar = dynamic(
   () => import("@/components/Layout/Navbar/Navbar").then((mod) => mod.Navbar),
   {
-    loading: LoadingBox,
+    loading: CenteredLoader,
+    ssr: false,
+  }
+);
+
+const ServerTime = dynamic(
+  () => import("./ServerTime/ServerTime").then((mod) => mod.ServerTime),
+  {
+    loading: () => <Loader />,
     ssr: false,
   }
 );
@@ -48,7 +56,7 @@ export function Shell({ children }: PropsWithChildren) {
             w="100%"
             px="md"
           >
-            <Group>
+            <Group flex={1}>
               <Burger
                 opened={opened}
                 onClick={toggle}

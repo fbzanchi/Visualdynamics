@@ -34,11 +34,13 @@
   font-size: var(--mantine-font-size-md);
   padding: rem(12px) var(--mantine-spacing-md);
   font-weight: 500;
-  color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0));
+  color: var(--mantine-color-dark-0);
+
+  transition: all linear .2s;
 
   &:hover {
-    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
-    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0));
+    background-color: var(--mantine-color-dark-6);
+    color: var(--mantine-color-dark-0);
   }
 }
 
@@ -58,7 +60,15 @@
   height: var(--mantine-font-size-lg);
   width: var(--mantine-font-size-lg);
   margin-right: var(--mantine-spacing-sm);
-  color: light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2));
+  color: var(--mantine-color-dark-1);
+}
+
+.linkActiveContainer {
+  background-color: alpha(var(--mantine-primary-color-8), 0.2);
+
+  &:hover {
+    background-color: alpha(var(--mantine-primary-color-8), 0.3);
+  }
 }
 
 .badge {

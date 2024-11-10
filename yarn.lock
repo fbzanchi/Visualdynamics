@@ -6356,6 +6356,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"framer-motion@npm:^11.11.11":
+  version: 11.11.11
+  resolution: "framer-motion@npm:11.11.11"
+  dependencies:
+    tslib: "npm:^2.4.0"
+  peerDependencies:
+    "@emotion/is-prop-valid": "*"
+    react: ^18.0.0
+    react-dom: ^18.0.0
+  peerDependenciesMeta:
+    "@emotion/is-prop-valid":
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 2fd6142861ed29cf2ef1d33a0ba9360fc551fd2e2d986b5303d578c93be7707c2058b08430e6c4b03d88a386d1b44bb842b06fb05f69ca4f961f907dd4399e8e
+  languageName: node
+  linkType: hard
+
 "fresh@npm:0.5.2":
   version: 0.5.2
   resolution: "fresh@npm:0.5.2"
@@ -12561,6 +12581,7 @@ __metadata:
     clsx: "npm:^2.1.1"
     database: "workspace:*"
     dayjs: "npm:^1.11.13"
+    framer-motion: "npm:^11.11.11"
     lucia: "npm:^3.2.2"
     next: "npm:^15.0.3"
     next-international: "npm:^1.3.1"

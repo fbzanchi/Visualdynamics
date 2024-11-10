@@ -1,6 +1,6 @@
 "use client";
 import { Fragment } from "react";
-import { Box, Loader, Text } from "@mantine/core";
+import { Box, Text } from "@mantine/core";
 
 import { useRunningSimulation } from "@/hooks/simulation/useRunningSimulation";
 import { dateFormat } from "@/utils/dateFormat";
@@ -23,21 +23,17 @@ function InfoText({ label, value }: { label: string; value?: string | null }) {
 }
 
 export function SubmissionInfo() {
-  const { data, isLoading } = useRunningSimulation();
+  const { data, isError, isLoading } = useRunningSimulation();
 
-  if (isLoading) {
-    return (
-      <Box className={classes.container}>
-        <Loader />
-      </Box>
-    );
+  if (!data || isLoading) {
+    return null;
   }
 
-  if (!data || data === "unauthenticated") {
+  if (data === "unauthenticated" || isError) {
     return "failed";
   }
 
-  if (data === "not-running") {
+  if (data === "not-running" || data === "queued") {
     return null;
   }
 

@@ -3,6 +3,7 @@
   grid-auto-flow: column;
   grid-template-rows: repeat(2, 1fr);
   gap: calc(var(--mantine-spacing-xs) / 2);
+  min-height: 71px;
 }
 
 .text_container {

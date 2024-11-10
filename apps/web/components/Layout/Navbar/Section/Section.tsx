@@ -1,6 +1,8 @@
 import { Badge, Box, Text, UnstyledButton } from "@mantine/core";
+import clsx from "clsx";
 import { USER_ROLE } from "database";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import classes from "./Section.module.css";
 
@@ -11,6 +13,8 @@ interface Props {
 }
 
 export function Section({ section, toggle, userRole }: Props) {
+  const pathname = usePathname();
+
   return (
     <Box className={classes.sectionContainer}>
       <Text className={classes.sectionTitle}>{section.title}</Text>
@@ -24,7 +28,9 @@ export function Section({ section, toggle, userRole }: Props) {
                 href={link.href}
                 key={link.label}
                 onClick={toggle}
-                className={classes.linkContainer}
+                className={clsx(classes.linkContainer, {
+                  [classes.linkActiveContainer]: pathname === link.href,
+                })}
               >
                 <div className={classes.linkInnerContainer}>
                   <link.icon

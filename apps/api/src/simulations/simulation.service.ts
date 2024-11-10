@@ -303,9 +303,14 @@ export class SimulationService {
   async getUserRunningSimulationData(userName: string) {
     const userFolderPath = `/files/${userName}`;
     const runningFilePath = `${userFolderPath}/running`;
+    const queuedFilePath = `${userFolderPath}/queued`;
 
     if (!existsSync(runningFilePath)) {
       return "not-running";
+    }
+
+    if (existsSync(queuedFilePath)) {
+      return "queued";
     }
 
     const simulationType = readFileSync(runningFilePath, {

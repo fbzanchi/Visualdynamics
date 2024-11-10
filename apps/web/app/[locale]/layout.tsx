@@ -5,7 +5,7 @@ import { Notifications } from "@mantine/notifications";
 import { Metadata } from "next";
 
 import { EmailValidationModal } from "@/components/Auth/EmailValidationModal";
-import { Shell } from "@/components/Layout/Shell";
+import { Shell } from "@/components/Layout/Shell/Shell";
 import { I18nProviderClient } from "@/locales/client";
 import { theme } from "@/theme";
 

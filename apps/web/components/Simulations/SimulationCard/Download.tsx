@@ -13,25 +13,25 @@ import classes from "./Download.module.css";
 
 const download = {
   commands: {
-    label: "Download Commands",
+    label: "Commands",
     file: "commands.txt",
     fn: getCommandsTxt,
     Icon: IconTxt,
   },
   figures: {
-    label: "Download Figures",
+    label: "Figures",
     file: "figures.zip",
     fn: getFiguresZip,
     Icon: IconZip,
   },
   gromacsLogs: {
-    label: "Download GROMACS Logs",
+    label: "GROMACS Logs",
     file: "logs.txt",
     fn: getGromacsLogs,
     Icon: IconTxt,
   },
   results: {
-    label: "Download Results",
+    label: "Results",
     file: "results.zip",
     fn: getResultsZip,
     Icon: IconZip,

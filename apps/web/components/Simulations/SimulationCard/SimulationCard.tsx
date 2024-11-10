@@ -80,7 +80,7 @@ export function SimulationCard({ simulation, type }: Props) {
               <Line label="Error cause" value={simulation?.errorCause} />
             </Box>
           </Box>
-          <Box className={classes.section_container}>
+          <Box className={classes.download_section_container}>
             <Title className={classes.section_title}>Downloads</Title>
             {simulation?.status === "COMPLETED" ||
             simulation?.status === "ERRORED" ? (

@@ -23,6 +23,7 @@ import { SIMULATION_TYPE } from "database";
 import { useRouter } from "next/navigation";
 
 import { submitNewSimulation } from "@/actions/simulation/submitNewSimulation";
+import { useRunningSimulation } from "@/hooks/simulation/useRunningSimulation";
 
 import { Alert } from "../Alert";
 
@@ -47,6 +48,7 @@ interface FormProps {
 }
 
 export function NewSimulationForm({ simulationType }: Props) {
+  const { refetch } = useRunningSimulation();
   const forceFields = allForceFields[simulationType];
   const [isLoading, setIsLoading] = useState<boolean>();
   const { getInputProps, onSubmit, values, validate } = useForm<FormProps>({
@@ -138,17 +140,29 @@ export function NewSimulationForm({ simulationType }: Props) {
     submitNewSimulation(data, simulationType)
       .then((response) => {
         if (response === "added-to-queue") {
+          refetch();
           router.push("/simulations/running");
         } else if (response === "unauthenticated") {
           router.replace("/?do=login&from=unauthenticated");
         } else if (response === "queued-or-running") {
+          refetch();
           router.push("/simulations/running");
         } else if (response === "unknown-error") {
           //
         } else {
-          const filename = `${simulationType}-${
-            values.filePDB.name.split(".")[0]
-          }-commands.txt`;
+          let filename = simulationType;
+          filename += `-${values.filePDB.name.split(".")[0]}`;
+
+          if (values.fileLigandITP) {
+            filename += `-${values.fileLigandITP.name.split(".")[0]}`;
+          }
+
+          if (values.fileLigandPDB) {
+            filename += `-${values.fileLigandPDB.name.split(".")[0]}`;
+          }
+
+          filename += "-commands.txt";
+
           const element = document.createElement("a");
           element.setAttribute(
             "href",

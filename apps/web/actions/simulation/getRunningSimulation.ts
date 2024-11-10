@@ -11,7 +11,8 @@ export type RunningSimulation =
       stepData: string[];
       submissionInfo: Partial<Simulation>;
     }
-  | "not-running";
+  | "not-running"
+  | "queued";
 
 export async function getRunningSimulation() {
   const { user } = await validateAuth();

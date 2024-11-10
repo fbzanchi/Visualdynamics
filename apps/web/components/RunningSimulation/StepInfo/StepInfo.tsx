@@ -1,6 +1,6 @@
 "use client";
 import { Fragment } from "react";
-import { Box, Loader, Title } from "@mantine/core";
+import { Box, Text, Title } from "@mantine/core";
 import { IconArrowDown } from "@tabler/icons-react";
 
 import { useRunningSimulation } from "@/hooks/simulation/useRunningSimulation";
@@ -22,21 +22,22 @@ const steps = {
 };
 
 export function StepInfo() {
-  const { data, isLoading } = useRunningSimulation();
+  const { data, isLoading, isError } = useRunningSimulation();
 
-  if (isLoading) {
+  if (!data || isLoading || isError) {
+    return null;
+  }
+
+  if (data === "unauthenticated") {
     return (
       <Box className={classes.container}>
-        <Loader />
+        <Title order={3}>Steps</Title>
+        <Text>Something went wrong.</Text>
       </Box>
     );
   }
 
-  if (!data || data === "unauthenticated") {
-    return "failed";
-  }
-
-  if (data === "not-running") {
+  if (data === "not-running" || data === "queued") {
     return null;
   }
 

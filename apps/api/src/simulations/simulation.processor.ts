@@ -67,6 +67,7 @@ export default async function (job: Job<SimulateData>, cb: DoneCallback) {
     const commands = await loadCommands(folder);
 
     chdir(folderRun);
+    writeFileSync(fileStepPath, "");
     await executeCommands(commands, fileStepPath, fileLogPath);
   } catch (e) {
     onError(job, new Error(e?.message));
